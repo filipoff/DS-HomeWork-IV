@@ -11,7 +11,7 @@ private:
 
 	String name;
 	String element;
-	Attribute attribute;
+	DynamicArray<Attribute> attributes;
 	Tag* nextSibling;
 	List<Tag*> children;
 
@@ -24,26 +24,31 @@ private:
 		this->nextSibling = other.nextSibling ? new Tag(*other.nextSibling) : NULL;
 		this->name = other.name;
 		this->element = other.element;
-		this->attribute = other.attribute;
+		this->attributes = other.attributes;
 		this->children = other.children;
 	}
 
 public:
 
-	Tag() : name(), element(), attribute(), nextSibling(NULL), children() {}
+	Tag() : name(), element(), attributes(), nextSibling(NULL), children() {}
 
 	Tag(const Tag& other)
 	{
 		copyFrom(other);
 	}
 
-	Tag(String name) : name(name), nextSibling(NULL), element(), attribute(), children() {}
+	Tag(String name) : name(name), nextSibling(NULL), element(), attributes(), children() {}
 
 	Tag(String name, String element) : name(name), nextSibling(NULL), element(element), 
-									   attribute(), children() {}
+									   attributes(), children() {}
 
 	Tag(String name, String attributeName, String attributeValue) : name(name),
-		nextSibling(NULL), element(), children(), attribute(attributeName, attributeValue) {}
+		nextSibling(NULL), element(), children()
+	{
+		Attribute temp(attributeName, attributeValue);
+		attributes.push(temp);
+	}
+
 
 	Tag& operator=(const Tag& other)
 	{
@@ -69,7 +74,25 @@ public:
 		return name;
 	}
 
-	String getValue() const
+	Attribute* findAtrributeByName(String name)
+	{
+		size_t size = attributes.getSize();
+		for (size_t i = 0; i < size; i++)
+		{
+			if (attributes.getAt(i).data.first == name)
+			{
+				return &attributes.getAt(i);
+			}
+		}
+		return NULL;
+	}
+
+	DynamicArray<Attribute> getAttributes() const
+	{
+		return attributes;
+	}
+
+	String getElement() const
 	{
 		return element;
 	}
@@ -84,6 +107,28 @@ public:
 		this->nextSibling = nextSibling;
 	}
 
+	void setName(String newName)
+	{
+		name = newName;
+	}
+
+	void setElement(String newElement)
+	{
+		element = newElement;
+	}
+
+	void setAttribute(Attribute attribute, String newName, String newValue)
+	{
+		attribute.data.first = newName;
+		attribute.data.second = newValue;
+	}
+
+	void addAttribute(String name, String value)
+	{
+		Attribute temp(name, value);
+		attributes.push(temp);
+	}
+
 	void addChild(Tag* child, Tag* nextSibling)
 	{
 		if (nextSibling)
@@ -95,7 +140,7 @@ public:
 
 	Tag* getLastChild() const
 	{
-		if (children.isEmpty())
+		if (!hasChildren())
 			return NULL;
 		return children.getAt(children.getSize() - 1);
 	}

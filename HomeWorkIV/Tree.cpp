@@ -13,7 +13,7 @@ Tree::Tree(String rootName)
 	root = new Tag(rootName);
 }
 
-DynamicArray<String> Tree::getTagNamesFromPath(String path)
+DynamicArray<String> Tree::getTagNamesFromPath(String path) const
 {
 	DynamicArray<String> tagNamesFromPath;
 	String next;
@@ -27,22 +27,31 @@ DynamicArray<String> Tree::getTagNamesFromPath(String path)
 		}
 		else next += path[i];
 	}
-	tagNamesFromPath.removeAt(0);
 	return tagNamesFromPath;
 }
 
-void Tree::addTagByElement(String path, String element)
+bool Tree::isRootName(String nodeName) const
+{
+	if (root->getName() == nodeName)
+		return true;
+	return false;
+}
+
+void Tree::addTagWithElement(String path, String element)
 {
 
 	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
-
-	Tag* current = root;
-
 	size_t size = tagNamesFromPath.getSize();
 
-	for (size_t i = 0; i < size; i++)
+	if (size == 1)
 	{
-		if (current->isChildFound(tagNamesFromPath.getAt(i)))
+		throw "Error, cannot add another root!";
+	}
+	Tag* current = root;
+
+	for (size_t i = 1; i < size; i++)
+	{
+		if (current->searchChildByName(tagNamesFromPath.getAt(i)))
 		{
 			current = current->getChildByName(tagNamesFromPath.getAt(i));
 		}
@@ -69,18 +78,22 @@ void Tree::addTagByElement(String path, String element)
 
 
 
-void Tree::addTagByAttribute(String path, String attributeName, String attributeValue)
+void Tree::addTagWithAttribute(String path, String attributeName, String attributeValue)
 {
 
 	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		throw "Error, cannot add another root!";
+	}
 
 	Tag* current = root;
 
-	size_t size = tagNamesFromPath.getSize();
-
-	for (size_t i = 0; i < size; i++)
+	for (size_t i = 1; i < size; i++)
 	{
-		if (current->isChildFound(tagNamesFromPath.getAt(i)))
+		if (current->searchChildByName(tagNamesFromPath.getAt(i)))
 		{
 			current = current->getChildByName(tagNamesFromPath.getAt(i));
 		}
@@ -104,6 +117,202 @@ void Tree::addTagByAttribute(String path, String attributeName, String attribute
 
 	}
 
+}
+
+void Tree::setTagElement(String path, String element)
+{
+	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		throw "Error, cannot set element of root, it has no element!";
+	}
+
+	Tag* current = root;
+	for (size_t i = 1; i < size; i++)
+	{
+		if (!current->searchChildByName(tagNamesFromPath.getAt(i)))
+		{
+			cerr << "Error, wrong path, tag to edit not found!" << endl;
+			return;
+		}
+
+		current = current->getChildByName(tagNamesFromPath.getAt(i));
+
+		if (i == size - 1)
+		{
+			current->setElement(element);
+			return;
+		}
+	}
+}
+
+void Tree::setTagAttribute(String path,
+	String oldName, String newName, String newValue)
+{
+	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		if (!isRootName(path))
+		{
+			cerr << "Error" << path <<"is not root" << endl;
+			return;
+		}
+		Attribute* temp = root->findAtrributeByName(oldName);
+		if (temp)
+		{
+			temp->data.first = newName;
+			temp->data.second = newValue;
+			return;
+		}
+		else
+		{
+			cerr << "Error, root tag attribute to set not found!" << endl;
+			return;
+		}
+	}
+
+	Tag* current = root;
+	for (size_t i = 1; i < size; i++)
+	{
+		if (!current->searchChildByName(tagNamesFromPath.getAt(i)))
+		{
+			cerr << "Error, wrong path, tag attribute to edit not found!" << endl;
+			return;
+		}
+
+		current = current->getChildByName(tagNamesFromPath.getAt(i));
+
+		if (i == size - 1)
+		{
+			Attribute* temp = current->findAtrributeByName(oldName);
+			if (temp)
+			{
+				temp->data.first = newName;
+				temp->data.second = newValue;
+				return;
+			}
+			else
+			{
+				cerr << "Error, root tag attribute to edit not found!" << endl;
+				return;
+			}
+		}
+	}
+}
+
+void Tree::addAttributeToTag(String path, String attributeName, String attributeValue)
+{
+	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		if (!isRootName(path))
+		{
+			cerr << "Error" << path << "is not root" << endl;
+			return;
+		}
+
+		root->addAttribute(attributeName, attributeValue);
+		return;
+	}
+
+	Tag* current = root;
+	for (size_t i = 1; i < size; i++)
+	{
+		if (!current->searchChildByName(tagNamesFromPath.getAt(i)))
+		{
+			cerr << "Error, wrong path, tag not found!" << endl;
+			return;
+		}
+
+		current = current->getChildByName(tagNamesFromPath.getAt(i));
+
+		if (i == size - 1)
+		{
+			current->addAttribute(attributeName, attributeValue);
+			return;
+		}
+	}
+}
+
+String Tree::getTagElement(String path) const
+{
+	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		if (!isRootName(path))
+		{
+			cerr << "Error" << path << "is not root" << endl;
+		}
+		throw "Error, cannot get element of root, it has no element!";
+	}
+
+	Tag* current = root;
+
+	for (size_t i = 1; i < size; i++)
+	{
+		if (!current->searchChildByName(tagNamesFromPath.getAt(i)))
+		{
+			throw "Error, wrong path, tag element not found!";
+		}
+
+		current = current->getChildByName(tagNamesFromPath.getAt(i));
+
+		if (i == size - 1)
+		{
+			return current->getElement();
+		}
+	}
+	return current->getElement();
+}
+
+DynamicArray<Attribute> Tree::getTagAttributes(String path) const
+{
+	DynamicArray<String> tagNamesFromPath(getTagNamesFromPath(path));
+	size_t size = tagNamesFromPath.getSize();
+
+	if (size == 1)
+	{
+		if (!isRootName(path))
+		{
+			cerr << "Error" << path << "is not root" << endl;
+			throw;
+		}
+		if (!root->getAttributes().getSize())
+		{
+			cerr << "There are no attributes for this tag!" << endl;
+		}
+		return root->getAttributes();
+	}
+
+	Tag* current = root;
+
+	for (size_t i = 1; i < size; i++)
+	{
+		if (!current->searchChildByName(tagNamesFromPath.getAt(i)))
+		{
+			throw "Error, wrong path, tag not found! Cannot get attributes";
+		}
+
+		current = current->getChildByName(tagNamesFromPath.getAt(i));
+
+		if (i == size - 1)
+		{
+			if (!current->getAttributes().getSize())
+			{
+				cerr << "There are no attributes for this tag!" << endl;
+			}
+			return current->getAttributes();
+		}
+	}
+	return current->getAttributes();
 }
 
 void Tree::print(ostream out) const
