@@ -4,14 +4,15 @@
 #include "String.h"
 #include "DynamicArray.h"
 #include "List.h"
-#include "Pair.h"
 using namespace std;
 
 
 
 int main()
 {
-	Tree test;
-	test.addTag("root/test/abc","alphabet");
+	Tree test("newRoot");
+	test.addTagByElement("root/abc","alphabet");
+	test.addTagByElement("root/ocb", "haha");
+	test.addTagByAttribute("root/abc/asd", "lang", "en");
 	return 0;
 }

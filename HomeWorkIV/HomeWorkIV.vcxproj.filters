@@ -44,7 +44,7 @@
     <ClInclude Include="Tag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pair.h">
+    <ClInclude Include="Attribute.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -85,7 +85,7 @@
   <ItemGroup>
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="List.h" />
-    <ClInclude Include="Pair.h" />
+    <ClInclude Include="Attribute.h" />
     <ClInclude Include="Tag.h" />
     <ClInclude Include="String.h" />
     <ClInclude Include="Tree.h" />
