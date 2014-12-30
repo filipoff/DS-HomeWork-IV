@@ -13,7 +13,6 @@ private:
 
 	void copyFrom(const DynamicArray& other)
 	{
-		clear();
 		data = new T[other.capacity];
 
 		for (size_t i = 0; i < other.size; i++)
@@ -43,10 +42,12 @@ private:
 
 public:
 	DynamicArray() : data(NULL), size(0), capacity(0) {}
+
 	DynamicArray(const DynamicArray<T> &other)
 	{
 		copyFrom(other);
 	}
+
 	DynamicArray(size_t capacity, T value)
 	{
 		data = new T[capacity];
@@ -61,7 +62,10 @@ public:
 	DynamicArray& operator=(const DynamicArray<T> &other)
 	{
 		if (this != &other)
+		{
+			clear();
 			copyFrom(other);
+		}
 
 		return *this;
 	}
