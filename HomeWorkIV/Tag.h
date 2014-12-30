@@ -39,8 +39,8 @@ public:
 
 	Tag(String name) : name(name), nextSibling(NULL), element(), attributes(), children() {}
 
-	Tag(String name, String element) : name(name), nextSibling(NULL), element(element), 
-									   attributes(), children() {}
+	Tag(String name, String element) : name(name), nextSibling(NULL), element(element),
+		attributes(), children() {}
 
 	Tag(String name, String attributeName, String attributeValue) : name(name),
 		nextSibling(NULL), element(), children()
@@ -74,17 +74,17 @@ public:
 		return name;
 	}
 
-	Attribute* findAtrributeByName(String name)
+	Attribute& findAtrributeByName(String name)
 	{
+		Attribute temp;
 		size_t size = attributes.getSize();
 		for (size_t i = 0; i < size; i++)
 		{
 			if (attributes.getAt(i).data.first == name)
 			{
-				return &attributes.getAt(i);
+				return attributes.getAt(i);
 			}
 		}
-		return NULL;
 	}
 
 	DynamicArray<Attribute> getAttributes() const
@@ -155,6 +155,11 @@ public:
 		return false;
 	}
 
+	bool hasAttributes() const
+	{
+		return  !attributes.isEmpty();
+	}
+
 	Tag* getChildByName(String childName)
 	{
 
@@ -163,6 +168,6 @@ public:
 			if (children.getAt(i)->getName() == childName)
 				return  children.getAt(i);
 		}
-			return NULL;
+		return NULL;
 	}
 };

@@ -11,7 +11,8 @@ using namespace std;
 int main()
 {
 	Tree test("newRoot");
-	test.addTagWithElement("root/1/2/3","alphabet");
-	test.addAttributeToTag("root/1", "version", "1");
+	test.addTagWithElement("newRoot/1/2/3","alphabet");
+	test.addAttributeToTag("newRoot", "version", "1");
+	test.setTagAttribute("newRoot", "version", "version", "2");
 	return 0;
 }
