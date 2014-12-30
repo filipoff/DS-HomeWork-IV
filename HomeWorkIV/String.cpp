@@ -1,11 +1,5 @@
 #include "String.h"
 
-void String::init()
-{
-	string = NULL;
-	length = 0;
-}
-
 void String::clear()
 {
 	delete[] string;
@@ -47,10 +41,8 @@ size_t String::getLength() const
 }
 
 
-String::String()
-{
-	init();
-}
+String::String() : string(NULL), length(0) {}
+
 
 String::String(const String& other)
 {

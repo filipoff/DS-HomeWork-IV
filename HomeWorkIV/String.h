@@ -8,7 +8,6 @@ private:
 	size_t length;
 
 private:
-	void init();
 	void copyFrom(const String& other);
 	void copyFrom(const char* other);
 
